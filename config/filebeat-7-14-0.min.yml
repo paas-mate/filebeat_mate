@@ -1,0 +1,88 @@
+###################### Filebeat Configuration Example #########################
+
+# This file is an example configuration file highlighting only the most common
+# options. The filebeat.reference.yml file from the same directory contains all the
+# supported options with more comments. You can use it as a reference.
+#
+# You can find the full configuration reference here:
+# https://www.elastic.co/guide/en/beats/filebeat/index.html
+
+# For more available modules and options, please see the filebeat.reference.yml sample
+# configuration file.
+
+# ============================== Filebeat inputs ===============================
+
+filebeat.inputs:
+
+  # Each - is an input. Most options can be set at the input level, so
+  # you can use different inputs for various configurations.
+  # Below are the input specific configurations.
+
+  - type: log
+
+    # Change to true to enable this input configuration.
+    enabled: false
+
+    # Paths that should be crawled and fetched. Glob based paths.
+    paths:
+      - /var/log/*.log
+      #- c:\programdata\elasticsearch\logs\*
+
+  # filestream is an input for collecting log messages from files. It is going to replace log input in the future.
+  - type: filestream
+
+    # Change to true to enable this input configuration.
+    enabled: false
+
+    # Paths that should be crawled and fetched. Glob based paths.
+    paths:
+      - /var/log/*.log
+      #- c:\programdata\elasticsearch\logs\*
+
+# ============================== Filebeat modules ==============================
+
+filebeat.config.modules:
+  # Glob pattern for configuration loading
+  path: ${path.config}/modules.d/*.yml
+
+  # Set to true to enable config reloading
+  reload.enabled: false
+
+  # Period on which files under path should be checked for changes
+  #reload.period: 10s
+
+# ======================= Elasticsearch template setting =======================
+
+setup.template.settings:
+  index.number_of_shards: 1
+  #index.codec: best_compression
+  #_source.enabled: false
+
+# =================================== Kibana ===================================
+
+# Starting with Beats version 6.0.0, the dashboards are loaded via the Kibana API.
+# This requires a Kibana endpoint configuration.
+setup.kibana:
+
+# Kibana Host
+# Scheme and port can be left out and will be set to the default (http and 5601)
+# In case you specify and additional path, the scheme is required: http://localhost:5601/path
+# IPv6 addresses should always be defined as: https://[2001:db8::1]:5601
+#host: "localhost:5601"
+
+# ================================== Outputs ===================================
+
+# Configure what output to use when sending the data collected by the beat.
+
+# ---------------------------- Elasticsearch Output ----------------------------
+output.elasticsearch:
+  # Array of hosts to connect to.
+  hosts: ["localhost:9200"]
+
+# ================================= Processors =================================
+processors:
+  - add_host_metadata:
+      when.not.contains.tags: forwarded
+  - add_cloud_metadata: ~
+  - add_docker_metadata: ~
+  - add_kubernetes_metadata: ~
