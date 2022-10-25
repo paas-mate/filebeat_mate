@@ -1,15 +1,17 @@
 FROM ttbb/base:go AS build
-COPY . /opt/sh/compile
-WORKDIR /opt/sh/compile/pkg
+COPY . /compile
+WORKDIR /compile/pkg
 RUN go build -o filebeat_mate .
 
 
 FROM ttbb/filebeat:nake
 
-COPY docker-build /opt/sh/filebeat/mate
+RUN mv /opt/filebeat/filebeat.yml /opt/filebeat/filebeat.original.yml
 
-COPY --from=build /opt/sh/compile/pkg/filebeat_mate /opt/sh/filebeat/mate/filebeat_mate
+COPY docker-build /opt/filebeat/mate
 
-WORKDIR /opt/sh/filebeat
+COPY --from=build /compile/pkg/filebeat_mate /opt/filebeat/mate/filebeat_mate
 
-CMD ["/usr/bin/dumb-init", "bash", "-vx", "/opt/sh/filebeat/mate/scripts/start.sh"]
+WORKDIR /opt/filebeat
+
+CMD ["/usr/bin/dumb-init", "bash", "-vx", "/opt/filebeat/mate/scripts/start.sh"]
