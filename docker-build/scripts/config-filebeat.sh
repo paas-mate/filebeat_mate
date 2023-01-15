@@ -9,6 +9,9 @@ echo -e '  - /opt/filebeat/filebeat.stdout.log' >> $FILEBEAT_HOME/filebeat.yml
 echo -e '  - /opt/filebeat/filebeat.stderr.log' >> $FILEBEAT_HOME/filebeat.yml
 if [ "$FILEBEAT_OUTPUT_TYPE" == "" ] || [ "$FILEBEAT_OUTPUT_TYPE" == "ELASTICSEARCH" ]; then
   echo -e 'output.elasticsearch:' >> $FILEBEAT_HOME/filebeat.yml
+  echo -e '  hosts: ['${ES_HOST}']' >> $FILEBEAT_HOME/filebeat.yml
+  echo -e 'setup.kibana:' >> $FILEBEAT_HOME/filebeat.yml
+  echo -e '  host: '${KIBANA_HOST}'' >> $FILEBEAT_HOME/filebeat.yml
 elif [ "$FILEBEAT_OUTPUT_TYPE" == "KAFKA" ]; then
   echo -e 'output.kafka:' >> $FILEBEAT_HOME/filebeat.yml
   echo -e '  hosts: ["localhost:9092"]' >> $FILEBEAT_HOME/filebeat.yml
