@@ -36,6 +36,17 @@ jobs:
           platforms: linux/amd64,linux/arm64
       - name: Save Docker Images
         run: docker pull ttbb/filebeat:mate;docker save ttbb/filebeat:mate -o filebeat-mate.tar.gz
+      - name: sed docker file
+        run: sed -i "s/filebeat:nake/filebeat:nake-7/" Dockerfile
+      - name: Push to Docker Hub
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: ttbb/filebeat:mate-7
+          platforms: linux/amd64,linux/arm64
+      - name: Save Docker Images
+        run: docker pull ttbb/filebeat:mate-7;docker save ttbb/filebeat:mate-7 -o filebeat-mate-7.tar.gz
       - uses: dev-drprasad/delete-tag-and-release@v0.2.0
         with:
           delete_release: true
@@ -58,6 +69,8 @@ jobs:
           body: "Latest docker image"
           name: "latest docker image"
           tag_name: latest_docker_image
-          files: filebeat-mate.tar.gz
+          files: |
+            filebeat-mate.tar.gz
+            filebeat-mate-7.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
